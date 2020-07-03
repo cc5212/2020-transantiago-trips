@@ -2,7 +2,7 @@
 
 
 -- Change to this line to use only the fist 100k rows
--- trips = LOAD 'hdfs://cm:9000/uhadoop2020/g7/viajes201908_laboral_100k.csv'USING PigStorage(';') AS
+-- trips = LOAD 'hdfs://cm:9000/uhadoop2020/g7/viajes201908_laboral_100k.csv'
 
 -- Load table from hadoop dfs, ignoring headers
 trips = LOAD 'hdfs://cm:9000/uhadoop2020/g7/viajes201908_laboral.csv.gz'
