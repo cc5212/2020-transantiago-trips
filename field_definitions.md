@@ -1,6 +1,6 @@
 | Nombre del campo                             | Descripción                                                                                                                      |
 |----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| Netapa                                       | Id de la etapa en el viaje (correlativo)                                                                                         |
+| Netapa                                       | Numero total de etapas                                                                                                           |
 | Etapas                                       | Resumen de las etapas                                                                                                            |
 | nEtapasSinBajada                             | Numero de etapas sin bajada del viaje                                                                                            |
 | ultimaEtapaConBajada                         | 1 si la última etapa tiene bajada estimada                                                                                       |
