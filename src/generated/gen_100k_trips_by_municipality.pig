@@ -225,12 +225,10 @@ trips = FOREACH trips_tmp GENERATE
     (tipo_corte_etapa_viaje == '-' ? NULL : tipo_corte_etapa_viaje) AS tipo_corte_etapa_viaje,
     (proposito == '-' ? NULL : proposito) AS proposito,
     dviajeenbus AS dviajeenbus;
+-- Loads the data and defines the trips identifier
 -- Extends 'load_trips.pig'
 
--- Filter only first stage trips, to avoid counting trips more than once
-first_stage_trips = FILTER trips BY netapa == 1;
-
-origin_dest = FOREACH first_stage_trips GENERATE 
+origin_dest = FOREACH trips GENERATE 
     comunasubida, comunabajada;
 
 -- Trips by origin municipality
