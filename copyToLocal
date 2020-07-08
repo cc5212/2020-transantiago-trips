@@ -1,0 +1,8 @@
+hdfs dfs -getmerge /uhadoop2020/g7/results/average_commute_length_per_municipality /data/2020/uhadoop/jdiaz/average_commute_length_per_municipality.tsv
+hdfs dfs -getmerge /uhadoop2020/g7/results/average_evening_commute_length_per_municipality /data/2020/uhadoop/jdiaz/average_evening_commute_length_per_municipality.tsv
+hdfs dfs -getmerge /uhadoop2020/g7/results/average_morning_commute_length_per_municipality /data/2020/uhadoop/jdiaz/average_morning_commute_length_per_municipality.tsv
+hdfs dfs -getmerge /uhadoop2020/g7/results/evening_commute_end_time /data/2020/uhadoop/jdiaz/evening_commute_end_time.tsv
+hdfs dfs -getmerge /uhadoop2020/g7/results/morning_commute_start_time /data/2020/uhadoop/jdiaz/morning_commute_start_time.tsv
+hdfs dfs -getmerge /uhadoop2020/g7/results/top5commute/top5_average_commute_duration_per_municipality /data/2020/uhadoop/jdiaz/top5_average_commute_duration_per_municipality.tsv
+
+
