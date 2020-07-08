@@ -6,8 +6,8 @@
 
 commutes = FILTER trips BY proposito == 'TRABAJO';
 
-morning_commutes = FILTER commutes BY GetHour(tiemposubida) <= 12;
-evening_commutes = FILTER commutes BY GetHour(tiemposubida) > 12;
+morning_commutes = FILTER commutes BY GetHour(tiemposubida) <= 9 AND GetHour(tiemposubida) >= 5;
+evening_commutes = FILTER commutes BY GetHour(tiemposubida) <=20 AND GetHour(tiemposubida) >=16 ;
 
 morning_commutes_proj = FOREACH morning_commutes 
     GENERATE 
@@ -31,6 +31,7 @@ morning_commutes_grouped = GROUP morning_commutes_proj BY comunasubida;
 average_morning_commute_length_per_municipality = FOREACH morning_commutes_grouped 
     GENERATE $0 AS origin, AVG(morning_commutes_proj.duracion) AS avg_duration;
 
+
 -- Average duration of evening commutes to every municipality, in minutes
 
 evening_commutes_grouped = GROUP evening_commutes_proj BY comunabajada;
@@ -51,6 +52,9 @@ c_grouped = GROUP c BY municipality;
 
 average_commute_length_per_municipality = FOREACH c_grouped
     GENERATE $0 as municipality, AVG(c.duration) AS avg_duration;
+
+average_commute_duration_ordered = ORDER average_commute_length_per_municipality BY avg_duration DESC;
+top5_average_commute_duration_per_municipality = LIMIT average_morning_commute_ordered 5;
 
 
 -------------------------------------------
@@ -91,7 +95,7 @@ evening_commute_end_time = FOREACH evening_commutes_grouped_2
 -------------------
 -- Store results --
 -------------------
-
+STORE top5_average_commute_duration_per_municipality  INTO '/uhadoop2020/g7/results/top5commute/top5_average_commute_duration_per_municipality';
 STORE average_morning_commute_length_per_municipality   INTO '/uhadoop2020/g7/results/average_morning_commute_length_per_municipality';
 STORE average_evening_commute_length_per_municipality   INTO '/uhadoop2020/g7/results/average_evening_commute_length_per_municipality';
 STORE average_commute_length_per_municipality           INTO '/uhadoop2020/g7/results/average_commute_length_per_municipality';
