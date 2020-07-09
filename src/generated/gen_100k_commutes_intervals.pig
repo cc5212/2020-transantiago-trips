@@ -1,11 +1,7 @@
 -- Pig script for loading the table
 
-
--- Change to this line to use only the fist 100k rows
--- trips_tmp = LOAD 'hdfs://cm:9000/uhadoop2020/g7/viajes201908_laboral_100k.csv'
-
 -- Load table from hadoop dfs, ignoring headers
-trips_tmp = LOAD 'hdfs://cm:9000/uhadoop2020/g7/viajes201908_laboral.csv.gz'
+trips_tmp = LOAD 'hdfs://cm:9000/uhadoop2020/g7/viajes201908_laboral_100k.csv'
 using org.apache.pig.piggybank.storage.CSVExcelStorage(';', 'NO_MULTILINE', 'NOCHANGE', 'SKIP_INPUT_HEADER')
 AS (
     netapa					:int,
@@ -231,104 +227,107 @@ trips = FOREACH trips_tmp GENERATE
     dviajeenbus AS dviajeenbus;
 -- Extends 'load_trips.pig'
 
+-- Same as commutes.pig, except using intervals instead of average
 -- Identify trips that correspond to commutes
 -- The criteria used is trips that list purpose equal to "TRABAJO" 
 -- (Other options are HOGAR, SINBAJADA, OTROS, MENOS1MINUTO).
 
 commutes = FILTER trips BY proposito == 'TRABAJO';
 
-morning_commutes = FILTER commutes BY GetHour(tiemposubida) <= 9 AND GetHour(tiemposubida) >= 5;
-evening_commutes = FILTER commutes BY GetHour(tiemposubida) <=20 AND GetHour(tiemposubida) >=16 ;
+morning_commutes = FILTER commutes BY GetHour(tiemposubida) <= 12;
+evening_commutes = FILTER commutes BY GetHour(tiemposubida) > 12;
 
 morning_commutes_proj = FOREACH morning_commutes 
     GENERATE 
     comunasubida,
     comunabajada,
-    MinutesBetween(tiempobajada, tiemposubida)+60*HoursBetween(tiempobajada, tiemposubida) AS duracion;
+    ((int) (MinutesBetween(tiempobajada, tiemposubida)+60*HoursBetween(tiempobajada, tiemposubida))/10)*10 AS intervalo;
 
 evening_commutes_proj = FOREACH evening_commutes
     GENERATE
     comunasubida,
     comunabajada,
-    MinutesBetween(tiempobajada, tiemposubida)+60*HoursBetween(tiempobajada, tiemposubida) AS duracion;
+    ((int) (MinutesBetween(tiempobajada, tiemposubida)+60*HoursBetween(tiempobajada, tiemposubida))/10)*10 AS intervalo;
+
 
 ------------------------
 -- Duration of commutes --
 ------------------------
 
--- Average duration of morning commutes from every municipality, in minutes
-morning_commutes_grouped = GROUP morning_commutes_proj BY comunasubida;
+-- Frequency of duration of morning commutes from every municipality, in 30 minute intervals
+morning_commutes_grouped = GROUP morning_commutes_proj BY (comunasubida, intervalo);
 
-average_morning_commute_length_per_municipality = FOREACH morning_commutes_grouped 
-    GENERATE $0 AS origin, AVG(morning_commutes_proj.duracion) AS avg_duration;
+morning_commute_length_per_municipality = FOREACH morning_commutes_grouped 
+    GENERATE FLATTEN($0) AS (origin, interval), COUNT(morning_commutes_proj.intervalo) AS frequency;
 
+morning_commute_length_per_municipality_sorted = ORDER morning_commute_length_per_municipality BY origin DESC, interval ASC;
 
--- Average duration of evening commutes to every municipality, in minutes
+evening_commutes_grouped = GROUP evening_commutes_proj BY (comunabajada, intervalo);
 
-evening_commutes_grouped = GROUP evening_commutes_proj BY comunabajada;
-average_evening_commute_length_per_municipality = FOREACH evening_commutes_grouped 
-    GENERATE $0 AS destination, AVG(evening_commutes_proj.duracion) AS avg_duration;
+evening_commute_length_per_municipality = FOREACH evening_commutes_grouped 
+    GENERATE FLATTEN($0) AS (destination, interval), COUNT(evening_commutes_proj.intervalo) AS frequency;
 
--- Average duration of commutes for each municipality, in minutes
--- Assumening people commute from their municipality in the morning and to it in the evening.
+evening_commute_length_per_municipality_sorted = ORDER evening_commute_length_per_municipality BY destination DESC, interval ASC;
+
+-- Frequency of duration of commutes for each municipality, in 30 minute intervals
+-- Assuming people commute from their municipality in the morning and to it in the evening.
 a = FOREACH morning_commutes_proj
-    GENERATE comunasubida AS municipality, duracion AS duration;
+    GENERATE comunasubida AS municipality, intervalo AS interval;
 
 b = FOREACH evening_commutes_proj
-    GENERATE comunabajada AS municipality, duracion AS duration;
+    GENERATE comunabajada AS municipality, intervalo AS interval;
 
 c = UNION a, b;
 
-c_grouped = GROUP c BY municipality;
+c_grouped = GROUP c BY (municipality, interval);
 
-average_commute_length_per_municipality = FOREACH c_grouped
-    GENERATE $0 as municipality, AVG(c.duration) AS avg_duration;
+commute_length_per_municipality = FOREACH c_grouped
+    GENERATE FLATTEN($0) AS (municipality, interval), COUNT(c.interval) AS frequency;
 
-average_commute_duration_ordered = ORDER average_commute_length_per_municipality BY avg_duration DESC;
-top5_average_commute_duration_per_municipality = LIMIT average_morning_commute_ordered 5;
-
+commute_length_per_municipality_sorted = ORDER commute_length_per_municipality BY municipality DESC, interval ASC;
 
 -------------------------------------------
 -- Morning commute start and evening end --
 -------------------------------------------
 
+-- Frequency of commute start and commute end for every municipality, in 1 hour intervals
+
 morning_commutes_proj_2 = FOREACH morning_commutes 
     GENERATE 
     comunasubida,
     comunabajada,
-    GetMinute(tiemposubida) AS minutosubida,
-    GetHour(tiemposubida) AS horasubida;
+    GetHour(tiemposubida) AS intervalo;
 
-morning_commutes_grouped_2 = GROUP morning_commutes_proj_2 BY comunasubida;
+morning_commutes_grouped_2 = GROUP morning_commutes_proj_2 BY (comunasubida, intervalo);
 
 morning_commute_start_time = FOREACH morning_commutes_grouped_2
     GENERATE 
-    $0 AS municipality,
-    (int) (AVG(morning_commutes_proj_2.horasubida)*60+AVG(morning_commutes_proj_2.minutosubida))/60 AS start_hour,
-    (int) (AVG(morning_commutes_proj_2.horasubida)*60+AVG(morning_commutes_proj_2.minutosubida))%60 AS start_minute;
+    FLATTEN($0) AS (municipality, interval),
+    COUNT(morning_commutes_proj_2.intervalo);
+
+morning_commute_start_time_sorted = ORDER morning_commute_start_time BY municipality DESC, interval ASC;
 
 evening_commutes_proj_2 = FOREACH evening_commutes 
     GENERATE 
     comunasubida,
     comunabajada,
-    GetMinute(tiempobajada) AS minutobajada,
-    GetHour(tiempobajada) AS horabajada;
+    GetHour(tiempobajada) AS intervalo;
 
-evening_commutes_grouped_2 = GROUP evening_commutes_proj_2 BY comunabajada;
+evening_commutes_grouped_2 = GROUP evening_commutes_proj_2 BY (comunabajada, intervalo);
 
 evening_commute_end_time = FOREACH evening_commutes_grouped_2
     GENERATE 
-    $0 as municipality, 
-    (int) (AVG(evening_commutes_proj_2.horabajada)*60+AVG(evening_commutes_proj_2.minutobajada))/60 AS end_hour,
-    (int) (AVG(evening_commutes_proj_2.horabajada)*60+AVG(evening_commutes_proj_2.minutobajada))%60 AS end_minute;
+    FLATTEN($0) AS (municipality, interval),
+    COUNT(evening_commutes_proj_2.intervalo);
 
+evening_commute_end_time_sorted = ORDER evening_commute_end_time BY municipality DESC, interval ASC;
 
 -------------------
 -- Store results --
 -------------------
-STORE top5_average_commute_duration_per_municipality  INTO '/uhadoop2020/g7/results/top5commute/top5_average_commute_duration_per_municipality';
-STORE average_morning_commute_length_per_municipality   INTO '/uhadoop2020/g7/results/average_morning_commute_length_per_municipality';
-STORE average_evening_commute_length_per_municipality   INTO '/uhadoop2020/g7/results/average_evening_commute_length_per_municipality';
-STORE average_commute_length_per_municipality           INTO '/uhadoop2020/g7/results/average_commute_length_per_municipality';
-STORE morning_commute_start_time                        INTO '/uhadoop2020/g7/results/morning_commute_start_time';
-STORE evening_commute_end_time                          INTO '/uhadoop2020/g7/results/evening_commute_end_time';
+
+STORE morning_commute_length_per_municipality_sorted INTO '/uhadoop2020/g7/results/commute_intervals/morning_commute_length_per_municipality';
+STORE evening_commute_length_per_municipality_sorted INTO '/uhadoop2020/g7/results/commute_intervals/evening_commute_length_per_municipality';
+STORE commute_length_per_municipality_sorted         INTO '/uhadoop2020/g7/results/commute_intervals/commute_length_per_municipality';
+STORE morning_commute_start_time_sorted              INTO '/uhadoop2020/g7/results/commute_intervals/morning_commute_start_time';
+STORE evening_commute_end_time_sorted                INTO '/uhadoop2020/g7/results/commute_intervals/evening_commute_end_time';
