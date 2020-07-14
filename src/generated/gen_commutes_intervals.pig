@@ -245,13 +245,13 @@ morning_commutes_proj = FOREACH morning_commutes
     GENERATE 
     comunasubida,
     comunabajada,
-    ((int) (MinutesBetween(tiempobajada, tiemposubida)+60*HoursBetween(tiempobajada, tiemposubida))/10)*10 AS intervalo;
+    ((int) MinutesBetween(tiempobajada, tiemposubida)/10)*10 AS intervalo;
 
 evening_commutes_proj = FOREACH evening_commutes
     GENERATE
     comunasubida,
     comunabajada,
-    ((int) (MinutesBetween(tiempobajada, tiemposubida)+60*HoursBetween(tiempobajada, tiemposubida))/10)*10 AS intervalo;
+    ((int) MinutesBetween(tiempobajada, tiemposubida)/10)*10 AS intervalo;
 
 
 ------------------------
