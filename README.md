@@ -25,6 +25,24 @@ The main technologies we used were Apache Hadoop and Apache Pig. We chose these 
 
 <!-- Detail the results of the project. Different projects will have different types of results; e.g., run-times or result sizes, evaluation of the methods you're comparing, the interface of the system you've built, and/or some of the results of the data analysis you conducted. -->
 
+Para el análisis de los datos, se tomaron en cuenta las comunas en las cuales las peronas que ahí residen invierten más tiempo en transportarse. Además se realizó un análisis del tiempo invertido en transportarse a los lugares de trabajo de las personas, tomando en cuenta que los horarios más comunes para viajar previo al inicio de la jornada laboral corresponden a horas entre las 5 y 9 am. De la misma forma se trabajó con los horarios de transporte posteriores a la jornada laboral, es decir, el tiempo que invierten las personas para transportarse de vuelta a sus hogares después del trabajo, este horario correspondería a las horas que se encuentran entre las 4 y 8 pm.
+
+Los resultados relevantes son los siguientes:
+
+- Existe una gran diferencia en los tiempos de translado hacia el lugar de trabajo de las personas que residen en las comunas de Providencia, Ñuñoa, Santiago y Las Condes, siendo estos tiempos mucho menores a los del resto de las comunas. Se llega a la conclusión de que en estas comunas se concentra la mayor cantidad de lugares de trabajo de Santiago, por lo que si una persona reside en estas comunas, lo más probable es que también trabaje dentro de estas y su traslado sea menor. Esto coincide con los datos de un estudio realizado con CEPCHILE el 2019 (https://www.cepchile.cl/cep/site/artic/20180405/asocfile/20180405120239/dpp_029_abril2018_srazmilic.pdf)
+
+- Existe una gran cantidad de personas que residen en comunas periféricas, las cuales registran un mayor tiempo de traslado hacia sus lugares de trabajo. Este factor tiene relación directa con el valor de suelo de estas comunas. Según estudios de CEPCHILE, el menor valor de suelo se encuentra en las comunas más alejadas del centro de Santiago, lo que ha provocado una masiva construcción de viviendas sociales alejadas de los lugares donde se concentra la mayor oferta laboral.
+
+- Los trabajos más probables de las personas que residen en las comunas mencionadas en el punto anterior corresponden a:
+
+	- Oficiales y operarios de la construcción
+	- Personal que realiza labores domésticas y afines.
+	- Personal que trabaja en lavanderías y tintorerías.
+	- Mensajeros, porteros y afines.
+
+Personas que realizan estos trabajos coinciden con las personas que residen en comunas con mayor índice de prioridad social (http://www.desarrollosocialyfamilia.gob.cl/storage/docs/INDICE._DE_PRIORIDAD_SOCIAL_2019.pdf)
+
+- Se puede concluir con todo lo mencionado anteriormente, que las personas que invierten más tiempo trasldándose a sus trabajos, coincide con las personas que suelen tener menores ingresos y por lo tanto mayor índice de prioridad social. Esto por no tener los recursos suficientes para residir en una comuna con alta concentración de oferta laboral o en una cercana a estas.
 
 # Conclusion
 
