@@ -61,7 +61,7 @@ In this graph the distribution of length of commutes for all municipalities can 
 ![Commute length distribution San Bernardo](visualizations/commutes_intervals/commute_length/san_bernardo.png)
 
 This map shows the most common destinations for morning commutes starting in La Pintana.
-![Municipalities with the longest trips times](results/top5)
+![Municipalities with the longest trips times](visualizations/maps/la_pintana_destinos_mañana.png)
 
 # Conclusion
 
