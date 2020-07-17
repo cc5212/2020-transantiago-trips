@@ -44,13 +44,13 @@ We mainly studied the start time of morning commutes, the end time of evening co
 
 In the following graph you can observe the average length of commutes for every municipality, obtained using the method described above.
 
-![Average commute length](visualizations\commutes\length.png)
+![Average commute length](visualizations/commutes/length.png)
 
 The next two graphs show the average morning commute start time, and the average evening commute end time, for every municipality.
-![Average morning commute start time](\visualizations\commutes\time_start.png)
+![Average morning commute start time](visualizations/commutes/time_start.png)
 
 
-![Average morning commute end time](\visualizations\commutes\time_start.png)
+![Average morning commute end time](visualizations/commutes/time_start.png)
 
 In this graph the distribution of length of commutes for all municipalities can be seen. And in the following graphs the same distribution can be seen, but for the municipalities with the shortest and longest average length of commutes, Providencia and San Bernardo.
 
@@ -61,7 +61,7 @@ In this graph the distribution of length of commutes for all municipalities can 
 ![Commute length distribution San Bernardo](visualizations/commutes_intervals/commute_length/san_bernardo.png)
 
 This map shows the most common destinations for morning commutes starting in La Pintana.
-![Municipalities with the longest trips times](resulsts/top5)
+![Municipalities with the longest trips times](results/top5)
 
 # Conclusion
 
