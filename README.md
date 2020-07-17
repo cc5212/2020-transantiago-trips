@@ -30,7 +30,7 @@ After the queries were run, the *getmerge* command was used to obtain the combin
 
 To study commutes we filtered trips that listed work as their purpose, since the dataset we're using is obtained from Bip validations, we assume that this field is an approximation made by the DTPM.
 
-At first, we separated morning from evening commutes by having a start time earlier than noon. However, with this method we found the average end time of evening commutes to be extremely early, so we decided to further filter morning commutes and evening commutes using a range of six hours for each one, ranging from 5 a.m. to 9 a.m. for morning commutes, and from 4 p.m. to 8 p.m. for evening commutes.
+At first, we separated morning from evening commutes by having a start time earlier than noon. However, with this method we found the average end time of evening commutes to be extremely early, so we decided to further filter morning commutes and evening commutes using a range for each one, ranging from 5 a.m. to 9 a.m. for morning commutes, and from 4 p.m. to 8 p.m. for evening commutes.
 
 Since we were not sure if the range we had used was reasonable, we also calculated the distribution of start and end times, in intervals of 10 minutes.
 
